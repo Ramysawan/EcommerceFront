@@ -10,6 +10,7 @@ import UserService from "services/UserService";
 import { FormGroup } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import validator from "validator";
 
 class RegisterPage extends Component{
   constructor(props){
@@ -39,36 +40,35 @@ class RegisterPage extends Component{
         document.getElementById("usernameDanger").className = "has-danger";
         document.getElementById("usernameDangerMessage").innerText = "Required";
     }
-    else{
-        document.getElementById("usernameDanger").className = "";
-        document.getElementById("usernameDangerMessage").innerText = "";
-    }
     
     if(this.state.email == ''){
       document.getElementById("emailDanger").className = "has-danger";
       document.getElementById("emailDangerMessage").innerText = "Required";
-    }
-    else{
-      document.getElementById("emailDanger").className = "";
-      document.getElementById("emailDangerMessage").innerText = "";
     }
 
     if(this.state.loginPassword == ''){
       document.getElementById("passwordDanger").className = "has-danger";
       document.getElementById("passwordDangerMessage").innerText = "Required";
     }
-    else{
-      document.getElementById("passwordDanger").className = "";
-      document.getElementById("passwordDangerMessage").innerText = "";
-    }
 
     if(this.state.confirmLoginPassword == ''){
       document.getElementById("confirmPasswordDanger").className = "has-danger";
       document.getElementById("confirmPasswordDangerMessage").innerText = "Required";
     }
-    else{
-      document.getElementById("confirmPasswordDanger").className = "";
-      document.getElementById("confirmPasswordDangerMessage").innerText = "";
+
+    if(this.state.confirmLoginPassword != '' && this.state.loginPassword != ''){
+      if(this.state.loginPassword != this.state.confirmLoginPassword){
+        document.getElementById("passwordDanger").className = "has-danger";
+        document.getElementById("passwordDangerMessage").innerText = "Password doesn't match";
+        document.getElementById("confirmPasswordDanger").className = "has-danger";
+        document.getElementById("confirmPasswordDangerMessage").innerText = "Password doesn't match";
+      }
+      else{
+        document.getElementById("passwordDanger").className = "";
+        document.getElementById("passwordDangerMessage").innerHTML = "&nbsp;";
+        document.getElementById("confirmPasswordDanger").className = "";
+        document.getElementById("confirmPasswordDangerMessage").innerHTML = "&nbsp;";
+      }
     }
 
     if(this.state.username != '' && this.state.loginPassword != '' && this.state.confirmLoginPassword != '' && this.state.email != ''){
@@ -77,6 +77,14 @@ class RegisterPage extends Component{
         document.getElementById("passwordDangerMessage").innerText = "Password doesn't match";
         document.getElementById("confirmPasswordDanger").className = "has-danger";
         document.getElementById("confirmPasswordDangerMessage").innerText = "Password doesn't match";
+      }
+      else if(!validator.isStrongPassword(this.state.loginPassword, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })){
+        document.getElementById("passwordDanger").className = "has-danger";
+        document.getElementById("passwordDangerMessage").innerText = "Weak Password";
+      }
+      else if (!validator.isEmail(this.state.email)) {
+        document.getElementById("emailDanger").className = "has-danger";
+        document.getElementById("emailDangerMessage").innerHTML = "Invalid email address";
       }
       else{
         UserService.createUser(user).then(res => {
@@ -90,22 +98,22 @@ class RegisterPage extends Component{
   changeUsernameHandler = (event) => {
     this.setState({username: event.target.value});
     document.getElementById("usernameDanger").className = "";
-    document.getElementById("usernameDangerMessage").innerText = "";
+    document.getElementById("usernameDangerMessage").innerHTML = "&nbsp;";
   }
   changePasswordHandler = (event) => {
     this.setState({loginPassword: event.target.value});
     document.getElementById("passwordDanger").className = "";
-    document.getElementById("passwordDangerMessage").innerText = "";
+    document.getElementById("passwordDangerMessage").innerHTML = "&nbsp;";
   }
   changeConfirmPasswordHandler = (event) => {
     this.setState({confirmLoginPassword: event.target.value});
     document.getElementById("confirmPasswordDanger").className = "";
-    document.getElementById("confirmPasswordDangerMessage").innerText = "";
+    document.getElementById("confirmPasswordDangerMessage").innerHTML = "&nbsp;";
   }
   changeEmailHandler = (event) => {
     this.setState({email: event.target.value});
     document.getElementById("emailDanger").className = "";
-    document.getElementById("emailDangerMessage").innerText = "";
+    document.getElementById("emailDangerMessage").innerHTML = "&nbsp;";
   }
 
   togglePassword = event => {
@@ -114,6 +122,29 @@ class RegisterPage extends Component{
 
   render() {
     const {isRevealPassword, loginPassword, confirmLoginPassword} = this.state;
+    const validate = (value) => {
+      if(value != ''){
+        if (validator.isStrongPassword(value, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })) {
+          document.getElementById("passwordDanger").className = "";
+          document.getElementById("passwordDangerMessage").innerHTML = "&nbsp;";
+        } else {
+          document.getElementById("passwordDanger").className = "has-danger";
+          document.getElementById("passwordDangerMessage").innerText = "Weak Password";
+        }
+      }
+    }
+    const validateEmail = (e) => {
+      var email = e.target.value
+      if(e != ''){
+        if (validator.isEmail(email)) {
+          document.getElementById("emailDanger").className = "";
+          document.getElementById("emailDangerMessage").innerHTML = "&nbsp;";
+        } else {
+          document.getElementById("emailDanger").className = "has-danger";
+          document.getElementById("emailDangerMessage").innerHTML = "Invalid email address";
+        }
+      }
+    }
     return (
       <>
         <ColorNavbar />
@@ -173,7 +204,7 @@ class RegisterPage extends Component{
                             onChange={this.changeUsernameHandler}/>
                           <span 
                             id="usernameDangerMessage" 
-                            style={{color:"#f5593d", fontSize: ".8rem", marginBottom: "6%"}}></span>
+                            style={{color:"#f5593d", fontSize: ".8rem"}}>&nbsp;</span>
                         </FormGroup>
                         
                         <FormGroup id="emailDanger">
@@ -181,10 +212,11 @@ class RegisterPage extends Component{
                             placeholder="Email" 
                             type="text" 
                             value={this.state.email} 
+                            onBlur={(e) => validateEmail(e)}
                             onChange={this.changeEmailHandler}/>
                           <span 
                             id="emailDangerMessage" 
-                            style={{color:"#f5593d", fontSize: ".8rem", marginBottom: "6%"}}></span>
+                            style={{color:"#f5593d", fontSize: ".8rem"}}>&nbsp;</span>
                         </FormGroup>
 
                         <FormGroup id="passwordDanger">
@@ -193,10 +225,9 @@ class RegisterPage extends Component{
                             placeholder="Password" 
                             type={isRevealPassword ? "text" : "password"} 
                             value={this.state.loginPassword}
-                            onChange={this.changePasswordHandler}/>
-                            <span onClick={this.togglePassword} ref={this.iconRevealPassword} style={{position: "absolute",
-  top: "10px",
-  right: "5px",}}>
+                            onChange={this.changePasswordHandler}
+                            onBlur={(e) => validate(e.target.value)}/>
+                            <span onClick={this.togglePassword} ref={this.iconRevealPassword} style={{position: "absolute", top: "10px", right: "5px",}}>
                               <span>
                                 {
                                   isRevealPassword ? 
@@ -208,7 +239,7 @@ class RegisterPage extends Component{
                           </div>
                           <span 
                             id="passwordDangerMessage" 
-                            style={{color:"#f5593d", fontSize: ".8rem", marginBottom: "6%"}}></span>
+                            style={{color:"#f5593d", fontSize: ".8rem"}}>&nbsp;</span>
                         </FormGroup>
 
                         <FormGroup id="confirmPasswordDanger">
@@ -219,7 +250,7 @@ class RegisterPage extends Component{
                             onChange={this.changeConfirmPasswordHandler}/>
                           <span 
                             id="confirmPasswordDangerMessage" 
-                            style={{color:"#f5593d", fontSize: ".8rem", marginBottom: "6%"}}></span>
+                            style={{color:"#f5593d", fontSize: ".8rem"}}>&nbsp;</span>
                         </FormGroup>
 
                       <Button block className="btn-round" color="default" onClick={this.registerUser}>
