@@ -130,7 +130,7 @@ ReactDOM.render(
         path="/edit-vendor"
         render={(props) => <EditVendor {...props} />}
       />
-      <Route path="/edit-brand" render={(props) => <EditBrand {...props} />} />
+      <Route path="/edit-brand/:brandId" render={(props) => <EditBrand {...props} />} />
       <Route
         path="/edit-driver"
         render={(props) => <EditDriver {...props} />}
@@ -144,7 +144,7 @@ ReactDOM.render(
         path="/view-vendor"
         render={(props) => <ViewVendor {...props} />}
       />
-      <Route path="/view-brand" render={(props) => <ViewBrand {...props} />} />
+      <Route path="/view-brand/:brandId" render={(props) => <ViewBrand {...props} />} />
       <Route
         path="/view-driver"
         render={(props) => <ViewDriver {...props} />}
