@@ -36,28 +36,28 @@ class RegisterPage extends Component{
     let user = {username: this.state.username, loginPassword: this.state.loginPassword, email: this.state.email};
     console.log('user => ' + JSON.stringify(user));
     
-    if(this.state.username == ''){
+    if(this.state.username === ''){
         document.getElementById("usernameDanger").className = "has-danger";
         document.getElementById("usernameDangerMessage").innerText = "Required";
     }
     
-    if(this.state.email == ''){
+    if(this.state.email === ''){
       document.getElementById("emailDanger").className = "has-danger";
       document.getElementById("emailDangerMessage").innerText = "Required";
     }
 
-    if(this.state.loginPassword == ''){
+    if(this.state.loginPassword === ''){
       document.getElementById("passwordDanger").className = "has-danger";
       document.getElementById("passwordDangerMessage").innerText = "Required";
     }
 
-    if(this.state.confirmLoginPassword == ''){
+    if(this.state.confirmLoginPassword === ''){
       document.getElementById("confirmPasswordDanger").className = "has-danger";
       document.getElementById("confirmPasswordDangerMessage").innerText = "Required";
     }
 
-    if(this.state.confirmLoginPassword != '' && this.state.loginPassword != ''){
-      if(this.state.loginPassword != this.state.confirmLoginPassword){
+    if(this.state.confirmLoginPassword !== '' && this.state.loginPassword !== ''){
+      if(this.state.loginPassword !== this.state.confirmLoginPassword){
         document.getElementById("passwordDanger").className = "has-danger";
         document.getElementById("passwordDangerMessage").innerText = "Password doesn't match";
         document.getElementById("confirmPasswordDanger").className = "has-danger";
@@ -71,8 +71,8 @@ class RegisterPage extends Component{
       }
     }
 
-    if(this.state.username != '' && this.state.loginPassword != '' && this.state.confirmLoginPassword != '' && this.state.email != ''){
-      if(this.state.loginPassword != this.state.confirmLoginPassword){
+    if(this.state.username !== '' && this.state.loginPassword !== '' && this.state.confirmLoginPassword !== '' && this.state.email !== ''){
+      if(this.state.loginPassword !== this.state.confirmLoginPassword){
         document.getElementById("passwordDanger").className = "has-danger";
         document.getElementById("passwordDangerMessage").innerText = "Password doesn't match";
         document.getElementById("confirmPasswordDanger").className = "has-danger";
@@ -80,7 +80,7 @@ class RegisterPage extends Component{
       }
       else if(!validator.isStrongPassword(this.state.loginPassword, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })){
         document.getElementById("passwordDanger").className = "has-danger";
-        document.getElementById("passwordDangerMessage").innerText = "Weak Password";
+        document.getElementById("passwordDangerMessage").innerText = "Weak Password [A-Z, a-z, 0-9, !@?]";
       }
       else if (!validator.isEmail(this.state.email)) {
         document.getElementById("emailDanger").className = "has-danger";
@@ -89,6 +89,19 @@ class RegisterPage extends Component{
       else{
         UserService.createUser(user).then(res => {
           this.props.history.push('/login-page');
+        })
+        .catch(err => {
+          if (err.response && err.response.data) {
+            if(err.response.data.message === 'Username is already taken'){
+              document.getElementById("usernameDanger").className = "has-danger";
+              document.getElementById("usernameDangerMessage").innerHTML = err.response.data.message;
+            }
+            if(err.response.data.message === 'Email is already taken'){
+              document.getElementById("emailDanger").className = "has-danger";
+              document.getElementById("emailDangerMessage").innerHTML = err.response.data.message;
+            }
+            console.log(err.response.data.message)
+          }
         });
       }
     }
@@ -129,7 +142,7 @@ class RegisterPage extends Component{
           document.getElementById("passwordDangerMessage").innerHTML = "&nbsp;";
         } else {
           document.getElementById("passwordDanger").className = "has-danger";
-          document.getElementById("passwordDangerMessage").innerText = "Weak Password";
+          document.getElementById("passwordDangerMessage").innerText = "Weak Password [A-Z, a-z, 0-9, !@?]";
         }
       }
     }
