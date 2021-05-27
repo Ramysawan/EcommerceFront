@@ -123,7 +123,7 @@ ReactDOM.render(
         render={(props) => <EditPurchase {...props} />}
       />
       <Route
-        path="/edit-category"
+        path="/edit-category/:categoryId"
         render={(props) => <EditCategory {...props} />}
       />
       <Route
@@ -159,7 +159,7 @@ ReactDOM.render(
         render={(props) => <ViewPurchase {...props} />}
       />
       <Route
-        path="/view-category"
+        path="/view-category/:categoryId"
         render={(props) => <ViewCategory {...props} />}
       />
       <Route
