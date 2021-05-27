@@ -46,8 +46,8 @@ class ViewCategory extends Component{
         if(this.state.category !== ''){
           CategoryService.getCategoryById(this.state.category.parentId).then(res => {
             this.setState({parentTitle: res.data.title});
-        });
-      }
+          });
+        }
     });
   }
   

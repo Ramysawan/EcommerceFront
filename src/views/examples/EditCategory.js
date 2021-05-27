@@ -52,20 +52,21 @@ class EditCategory extends Component{
   }
 
   componentDidMount(){
-    CategoryService.getCategoryById(this.state.categoryId).then( (res) => {
+    CategoryService.getCategoryById(this.state.categoryId).then((res) => {
         let category = res.data;
         this.setState({
           categoryTitle: category.title,
           categoryDesc: category.description,
           categoryImage: category.photoURL,
-          categoryParent: category.parentid,
-          selectedValue: category.parentid
+          categoryParent: category.parentId,
+          selectedValue: category.parentId
         });
     });
+    
     CategoryService.getCategories().then((res) => {
       res.data.forEach(category => {
         if(category.title !== this.state.categoryTitle){
-          let dropDownEle = { label: category["title"], value: category };
+          let dropDownEle = { label: category["title"], value: category.parentId };
           this.state.dataCategories.push(dropDownEle);
         }
       });
@@ -93,7 +94,7 @@ class EditCategory extends Component{
     else{
       if(this.state.categoryParent !== ''){
         CategoryService.createCategoryWithParent(category, this.state.categoryParent).then(res => {
-          this.props.history.push('/presentation');
+          this.props.history.push('/category-management');
         })
         .catch(err => {
           if (err.response && err.response.data) {
@@ -103,14 +104,8 @@ class EditCategory extends Component{
         });
       }
       else{
-        CategoryService.createCategory(category).then(res => {
-          this.props.history.push('/presentation');
-        })
-        .catch(err => {
-          if (err.response && err.response.data) {
-            
-            console.log(err.response.data.message)
-          }
+        CategoryService.updateCategory(category, this.state.categoryId).then( res => {
+          this.props.history.push('/category-management');
         });
       }
     }

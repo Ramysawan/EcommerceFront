@@ -239,13 +239,13 @@ function EditProduct() {
                                   type="textarea"
                                 />
                               </FormGroup>
-                              <FormGroup check>
+                              {/* <FormGroup check>
                                 <Label check>
                                   <Input defaultValue="" type="checkbox" />
                                   Display on landing page{" "}
                                   <span className="form-check-sign" />
                                 </Label>
-                              </FormGroup>
+                              </FormGroup> */}
                             </Col>
                           </Row>
                           <Row className="buttons-row" style={{marginTop:"4%"}}>
